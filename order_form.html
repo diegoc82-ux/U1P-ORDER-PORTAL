@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="approved_customers.js"></script>
   <script src="products_data.js"></script>
   <script src="pricing_data.js"></script>
   <style>
@@ -450,6 +451,46 @@
     }
     .modal p { color: var(--gray-3); margin-bottom: 28px; font-size: .92rem; }
 
+    /* ── Customer bar ── */
+    .customer-bar {
+      background: var(--black);
+      border-bottom: 2px solid #222;
+      padding: 10px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .83rem;
+    }
+    .customer-bar .cust-info {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #aaa;
+      font-family: 'Inter', sans-serif;
+    }
+    .customer-bar .cust-name {
+      font-family: 'Rubik', sans-serif;
+      font-weight: 700;
+      color: var(--white);
+      font-size: .88rem;
+    }
+    .customer-bar .cust-sep { color: #444; }
+    .customer-bar .cust-company { color: var(--gold); font-weight: 600; }
+    .btn-signout {
+      background: transparent;
+      border: 1px solid #444;
+      color: #888;
+      font-family: 'Rubik', sans-serif;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-signout:hover { border-color: var(--gold); color: var(--gold); }
+
     /* ── Footer ── */
     footer {
       background: var(--black);
@@ -485,6 +526,16 @@
   </div>
   <div class="page-title">Client <span>Order</span> Portal</div>
 </header>
+
+<!-- Customer bar -->
+<div class="customer-bar" id="customer-bar">
+  <div class="cust-info">
+    <span>Welcome, <span class="cust-name" id="cust-name-display">—</span></span>
+    <span class="cust-sep">|</span>
+    <span class="cust-company" id="cust-company-display">—</span>
+  </div>
+  <button class="btn-signout" onclick="signOut()">&#x2192; Sign Out</button>
+</div>
 
 <!-- Hero -->
 <div class="hero">
@@ -657,6 +708,33 @@
 </footer>
 
 <script>
+// ─────────────────────────────────────────────────
+//  AUTH GATE — redirect to login if no session
+// ─────────────────────────────────────────────────
+const _session = JSON.parse(localStorage.getItem('u1p_session') || 'null');
+if (!_session || !_session.email) {
+  window.location.href = 'login.html';
+}
+
+function signOut() {
+  localStorage.removeItem('u1p_session');
+  window.location.href = 'login.html';
+}
+
+// Populate customer bar and pre-fill Step 1 on DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+  if (!_session) return;
+  // Customer bar
+  document.getElementById('cust-name-display').textContent    = _session.name    || _session.email;
+  document.getElementById('cust-company-display').textContent = _session.company || '';
+  // Pre-fill Step 1
+  if (_session.name)    document.getElementById('client-name').value    = _session.name;
+  if (_session.company) document.getElementById('client-company').value = _session.company;
+  if (_session.email)   document.getElementById('client-email').value   = _session.email;
+  if (_session.phone)   document.getElementById('client-phone').value   = _session.phone;
+  if (_session.address) document.getElementById('client-address').value = _session.address;
+});
+
 // ─────────────────────────────────────────────────
 //  CONFIG — update this email address
 // ─────────────────────────────────────────────────
